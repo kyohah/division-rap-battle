@@ -1,0 +1,22 @@
+version: 2
+
+references:
+
+jobs:
+  deploy:
+    docker:
+      - image: cibuilds/aws:1.18.25
+    working_directory: ~/division-rap-battle
+    steps:
+      - checkout
+      - run: aws s3 sync frontend s3://divi.si/frontend --delete
+      - run: aws cloudfront create-invalidation --distribution-id E2M2BVVJKVJLE9 --paths '/*'
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - deploy:
+          filters:
+            branches:
+              only: master
